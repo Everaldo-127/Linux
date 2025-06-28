@@ -1,17 +1,5 @@
 #!/bin/bash
 
-# Verifica se o Git está instalado; se não estiver, instala
-if ! command -v git &>/dev/null; then
-  echo "[INFO] Git não encontrado. Instalando..."
-  sudo apt-get update && sudo apt-get install -y git || {
-    echo "[ERRO] Falha ao instalar o Git."
-    exit 1
-  }
-  echo "[INFO] Git instalado com sucesso."
-else
-  echo "[INFO] Git já está instalado."
-fi
-
 log() {
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
 }
@@ -41,16 +29,6 @@ for REPO in $REPOSITORIOS; do
   }
 
   cd "$TMP_DIR" || exit 1
-
-  # Garantir identidade Git local se não estiver configurada
-  if ! git config user.name &>/dev/null; then
-    git config user.name "Everaldo-127"  # ⬅️ Nome de usuário GitHub
-  fi
-
-  if ! git config user.email &>/dev/null; then
-    git config user.email "everaldo@example.com"  # ⬅️ E-mail usado no GitHub
-  fi
-
   git checkout main || git checkout -b main
 
   cd "$DIR_ATUAL" || exit 1
@@ -85,21 +63,5 @@ for REPO in $REPOSITORIOS; do
 done
 
 log "=== PROCESSO FINALIZADO ==="
-
-# Verifica se o script está no PATH; se não estiver, adiciona um link simbólico
-SCRIPT_NAME="$(basename "$0")"
-SCRIPT_PATH="$(realpath "$0")"
-LINK_PATH="/usr/local/bin/$SCRIPT_NAME"
-
-if ! command -v "$SCRIPT_NAME" &>/dev/null; then
-  echo "[INFO] Adicionando script ao PATH global em /usr/local/bin..."
-  sudo ln -sf "$SCRIPT_PATH" "$LINK_PATH" || {
-    echo "[ERRO] Falha ao criar link simbólico."
-    exit 1
-  }
-  echo "[INFO] Script agora disponível globalmente como comando '$SCRIPT_NAME'."
-else
-  echo "[INFO] Script já está acessível no PATH."
-fi
 
 
